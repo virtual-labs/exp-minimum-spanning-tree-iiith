@@ -1,39 +1,95 @@
-{
-  "version": 2.0,
-  "questions": [
-    {
-      "question": "This is a Sample Question 1?",
-      "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
-      },
-      "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
-      },
-      "correctAnswer": "a",
-      "difficulty": "beginner"
-    },
-    {
-      "question": "This is a Sample Question 2?",
-      "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
-      },
-      "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
-      },
-      "correctAnswer": "c",
-      "difficulty": "beginner"
-    }
-  ]
-}
+[
+  {
+    "question": "A Minimum Spanning Tree is a subgraph that is a tree and connects all the vertices together.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answer": "True",
+    "difficulty": "easy"
+  },
+  {
+    "question": "If a graph has unique edge weights, the Minimum Spanning Tree is unique. True or False?",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answer": "True",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which of these algorithms is NOT used for finding MST?",
+    "options": [
+      "Kruskal's Algorithm",
+      "Prim's Algorithm",
+      "Boruvka's Algorithm",
+      "Dijkstra's Algorithm"
+    ],
+    "answer": "Dijkstra's Algorithm",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Boruvka's algorithm starts with a forest of trees, where each vertex is a separate tree.",
+    "options": [
+      "True",
+      "False"
+    ],
+    "answer": "True",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "When does Boruvka's algorithm terminate?",
+    "options": [
+      "When all edges have been considered",
+      "When there is only one component left",
+      "After V-1 iterations",
+      "When a cycle is detected"
+    ],
+    "answer": "When there is only one component left",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "The edges added in one iteration of Boruvka's algorithm are selected based on:",
+    "options": [
+      "The cheapest edge from each vertex",
+      "The cheapest edge from each component",
+      "The globally cheapest edge",
+      "A random edge"
+    ],
+    "answer": "The cheapest edge from each component",
+    "difficulty": "intermediate"
+  },
+  {
+    "question": "Boruvka's algorithm is particularly well-suited for:",
+    "options": [
+      "Dense graphs",
+      "Sparse graphs",
+      "Parallel and distributed computation",
+      "Graphs with negative edge weights"
+    ],
+    "answer": "Parallel and distributed computation",
+    "difficulty": "advanced"
+  },
+  {
+    "question": "If a graph is disconnected, what does Boruvka's algorithm find?",
+    "options": [
+      "A Minimum Spanning Tree",
+      "A Minimum Spanning Forest",
+      "It fails",
+      "A single path"
+    ],
+    "answer": "A Minimum Spanning Forest",
+    "difficulty": "advanced"
+  },
+  {
+    "question": "The number of iterations in Boruvka's algorithm is at most:",
+    "options": [
+      "V",
+      "E",
+      "log V",
+      "V/2"
+    ],
+    "answer": "log V",
+    "difficulty": "advanced"
+  }
+]

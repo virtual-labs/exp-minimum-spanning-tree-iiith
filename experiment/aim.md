@@ -1,1 +1,3 @@
 ### Aim of the experiment
+
+To understand the working of Boruvka's algorithm for finding the Minimum Spanning Tree (MST) of a given graph. The user will be able to visualize the algorithm and interact with it to see how it finds the MST.
