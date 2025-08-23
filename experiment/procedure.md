@@ -1,4 +1,4 @@
-### Procedure
+### Controls 
 
 The user will be provided with a graph visualization interface.
 The controls for the experiment are as follows:
