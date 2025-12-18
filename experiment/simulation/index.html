@@ -1,13 +1,338 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<!-- Add CSS at the head of HTML file -->
-    <link rel="stylesheet" href="./css/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borůvka's MST Algorithm Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-		<!-- Your code goes here-->
+    <div class="app-container">
+        <header class="header">
+            <h1>
+                🌳 Borůvka's MST Algorithm Visualizer
+                <div class="status-indicator"></div>
+            </h1>
+            <div style="font-size: 0.9em; opacity: 0.9;">
+                Distributed Minimum Spanning Tree Algorithm
+            </div>
+        </header>
 
-	<!-- Add JS at the bottom of HTML file --> 
-        <script src="./js/main.js"></script>
+        <div class="controls-panel">
+            <div class="control-section">
+                <h3>Graph Configuration</h3>
+                <div class="control-group">
+                    <label for="weightType">Weight Type</label>
+                    <select id="weightType" onchange="updateWeightType()">
+                        <option value="random" selected>Random</option>
+                        <option value="distance">Distance-based</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="selectMode" onchange="toggleSelectMode()">
+                        <label for="selectMode">Selection Mode</label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="speed">Animation Speed: <span id="speedValue">1x</span></label>
+                    <input type="range" id="speed" class="speed-slider" min="0.25" max="3" step="0.25" value="1" oninput="updateSpeedDisplay()">
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Graph Operations</h3>
+                <button class="btn btn-primary" onclick="generateRandomGraph()">
+                    🎲 Generate Random Graph
+                </button>
+                
+                <button class="btn btn-success" onclick="createCompleteGraph()" id="completeGraphBtn">
+                    🔗 Create Complete Graph
+                </button>
+                
+                <button class="btn btn-warning" onclick="createGraphFromSelected()" id="createGraphBtn" disabled>
+                    ✨ Create from Selected
+                </button>
+                
+                <button class="btn btn-danger" onclick="clearGraph()">
+                    🗑️ Clear Graph
+                </button>
+            </div>
+
+            <div class="control-section">
+                <h3>Algorithm Execution</h3>
+                <div class="control-group">
+                    <label for="executionMode">Execution Mode</label>
+                    <select id="executionMode" onchange="updateExecutionMode()">
+                        <option value="automatic" selected>Automatic</option>
+                        <option value="manual">Step-by-Step (Manual)</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-success" onclick="startDistributedBoruvka()" id="distributedBtn">
+                    📡 Run Distributed Borůvka's Algorithm
+                </button>
+                
+                <button class="btn btn-warning" onclick="nextStep()" id="nextStepBtn" disabled style="display: none;">
+                    ➡️ Next Step / Start Algorithm
+                </button>
+                
+                <button class="btn btn-warning" onclick="resetVisualization()" id="resetBtn">
+                    🔄 Reset Visualization
+                </button>
+            </div>
+
+            <div class="selected-points" id="selectedPointsPanel">
+                <h5>Selected Points</h5>
+                <div class="point-list" id="selectedPointsList"></div>
+            </div>
+        </div>
+
+        <div class="experiment-area">
+            <button class="info-btn" id="infoBtn" onclick="showInfo()" title="Information Guide (F1 or Ctrl+H)">ℹ️</button>
+            <canvas id="canvas" width="900" height="700"></canvas>
+        </div>
+
+        <div class="observations-panel">
+            <div class="status-section">
+                <h4>Activity Logs</h4>
+                <div class="logs" id="activityLogs">
+                    <div class="log-entry message">
+                        <span class="timestamp">[00:00]</span> Ready to start MST visualization
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-section">
+                <h4>MPI Code Download</h4>
+                <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 2px solid #0ea5e9; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 0.9rem; color: #475569; margin-bottom: 15px; line-height: 1.5;">
+                        Download production-ready MPI implementation of Borůvka's algorithm for distributed systems.
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <button onclick="downloadMPIBoruvka()" style="flex: 1; background: linear-gradient(135deg, #3b82f6, #1e40af); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            📁 Borůvka's MPI
+                        </button>
+                        <button onclick="downloadSequentialBoruvka()" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            📁 Sequential Version
+                        </button>
+                    </div>
+                    
+                    <div style="font-size: 0.8rem; color: #64748b; text-align: left; background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <strong>Usage Instructions:</strong><br>
+                        1. Compile: <code>mpicc -o boruvka filename.c</code><br>
+                        2. Run: <code>mpirun -np [processes] ./boruvka</code><br>
+                        3. Optimal for distributed systems with parallel edge finding
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-section">
+                <h4>Algorithm Status</h4>
+                <div class="step-indicator">
+                    <div class="step-dot active"></div>
+                    <div class="step-text" id="currentStep">Ready to start</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalCost">0</div>
+                        <div class="stat-label">Total Cost</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="currentPhase">0</div>
+                        <div class="stat-label">Current Phase</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="edgesInMST">0</div>
+                        <div class="stat-label">MST Edges</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="graph-info">
+                <h5>Graph Analysis</h5>
+                <p><strong>Vertices:</strong> <span id="vertexCount">0</span></p>
+                <p><strong>Edges:</strong> <span id="edgeCount">0</span></p>
+                <p><strong>Connected:</strong> <span id="connectivity">Unknown</span></p>
+                <p><strong>Density:</strong> <span id="density">0%</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+
+    <!-- Mobile Portrait Orientation Overlay -->
+    <div class="rotate-device-overlay">
+        <div class="rotate-icon">📱➡️📲</div>
+        <h2>Please Rotate Your Device</h2>
+        <p>For the best experience, please rotate your device to landscape mode to view this MST algorithm visualization.</p>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal-overlay" id="infoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🌳 Borůvka's MST Algorithm - Complete Guide</h2>
+                <button class="modal-close" onclick="hideInfo()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="guide-section">
+                    <h3>🎯 What is Borůvka's Algorithm?</h3>
+                    <p><strong>Borůvka's Algorithm</strong> is a greedy algorithm for finding the Minimum Spanning Tree (MST) of a connected, weighted graph. Developed by Otakar Borůvka in 1926, it was the first MST algorithm ever published.</p>
+                    <ul>
+                        <li><strong>Time Complexity:</strong> O(E log V) where E = edges, V = vertices</li>
+                        <li><strong>Space Complexity:</strong> O(V) for Union-Find data structure</li>
+                        <li><strong>Parallel Nature:</strong> Naturally suited for distributed computation</li>
+                        <li><strong>Applications:</strong> Network design, clustering, circuit design</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>🧮 Algorithm Steps</h3>
+                    <ol>
+                        <li><strong>Initialize:</strong> Each vertex starts as its own component</li>
+                        <li><strong>Find Minimum Edges:</strong> For each component, find the minimum weight edge leaving it</li>
+                        <li><strong>Add to MST:</strong> Add all minimum edges to the MST (avoiding cycles using Union-Find)</li>
+                        <li><strong>Update Components:</strong> Merge components connected by new edges</li>
+                        <li><strong>Repeat:</strong> Continue until only one component remains</li>
+                    </ol>
+                    <div class="formula-box">
+                        <strong>Key Property:</strong> Each phase reduces the number of components by at least half<br>
+                        <strong>Phases:</strong> At most log V phases needed for completion
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>🔧 Graph Configuration</h3>
+                    <ul>
+                        <li><strong>Weight Types:</strong>
+                            <ul>
+                                <li><em>Random:</em> Random integer weights (1-20)</li>
+                                <li><em>Distance-based:</em> Weights based on Euclidean distance</li>
+                            </ul>
+                        </li>
+                        <li><strong>Selection Mode:</strong> Click vertices to select them for custom graph creation</li>
+                        <li><strong>Animation Speed:</strong> Control visualization speed (0.25x to 3x)</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>🎮 Graph Operations</h3>
+                    <ul>
+                        <li><strong>Generate Random Graph:</strong> Creates 6-8 vertices with random edges</li>
+                        <li><strong>Create Complete Graph:</strong> Connects all existing vertices</li>
+                        <li><strong>Create from Selected:</strong> Creates graph using only selected vertices</li>
+                        <li><strong>Manual Creation:</strong> Click to add vertices, click two vertices to add edges</li>
+                        <li><strong>Clear Graph:</strong> Removes all vertices and edges</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>⚙️ Execution Modes</h3>
+                    <ul>
+                        <li><strong>Automatic Mode:</strong> Algorithm runs with smooth animations between steps</li>
+                        <li><strong>Step-by-Step (Manual):</strong> Use "Next Step" button to advance through each phase</li>
+                        <li><strong>Standard Borůvka:</strong> Classic centralized version of the algorithm</li>
+                        <li><strong>Distributed Version:</strong> Simulates parallel processing with visual processor highlighting</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>📊 Visual Elements</h3>
+                    <ul>
+                        <li><strong>Vertices:</strong> Blue circles with component labels (C1, C2, etc.)</li>
+                        <li><strong>Edges:</strong> Lines with weight labels</li>
+                        <li><strong>MST Edges:</strong> Thick green lines when added to MST</li>
+                        <li><strong>Minimum Edges:</strong> Highlighted in yellow during selection</li>
+                        <li><strong>Selected Vertices:</strong> Orange outline in selection mode</li>
+                        <li><strong>Processors:</strong> Yellow highlighting during distributed simulation</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>📈 Performance Metrics</h3>
+                    <ul>
+                        <li><strong>Total Cost:</strong> Sum of weights of edges in MST</li>
+                        <li><strong>Current Phase:</strong> Which phase of the algorithm is executing</li>
+                        <li><strong>Components:</strong> Number of remaining separate components</li>
+                        <li><strong>MST Edges:</strong> Number of edges currently in the MST</li>
+                        <li><strong>Graph Stats:</strong> Vertices, edges, connectivity, and density</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>🌐 Distributed Computing</h3>
+                    <p>Borůvka's algorithm is particularly well-suited for parallel and distributed computing:</p>
+                    <ul>
+                        <li><strong>Parallel Edge Finding:</strong> Each processor can independently find minimum edges for assigned components</li>
+                        <li><strong>Communication Phase:</strong> Processors exchange minimum edge information</li>
+                        <li><strong>Synchronization:</strong> All processors must complete before next phase</li>
+                        <li><strong>MPI Implementation:</strong> Download production-ready MPI code for real distributed systems</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>🧪 Educational Experiments</h3>
+                    <ol>
+                        <li><strong>Basic MST:</strong> Create simple connected graph, run algorithm in manual mode</li>
+                        <li><strong>Compare Modes:</strong> Run same graph in automatic vs manual mode</li>
+                        <li><strong>Distributed vs Centralized:</strong> Compare standard vs distributed versions</li>
+                        <li><strong>Graph Types:</strong> Test on complete graphs, sparse graphs, different densities</li>
+                        <li><strong>Weight Impact:</strong> Compare random vs distance-based weights</li>
+                        <li><strong>Scalability:</strong> Test with different graph sizes</li>
+                    </ol>
+                </div>
+
+                <div class="guide-section">
+                    <h3>🎯 How to Use This Visualizer</h3>
+                    <ol>
+                        <li><strong>Create Graph:</strong> Generate random graph or manually create vertices/edges</li>
+                        <li><strong>Choose Mode:</strong> Select automatic or step-by-step execution</li>
+                        <li><strong>Configure:</strong> Adjust animation speed and weight type</li>
+                        <li><strong>Run Algorithm:</strong> Click "Run Borůvka's Algorithm" or "Run Distributed Version"</li>
+                        <li><strong>Observe:</strong> Watch component merging and MST construction</li>
+                        <li><strong>Analyze:</strong> Review performance metrics and activity logs</li>
+                    </ol>
+                </div>
+
+                <div class="guide-section">
+                    <h3>💡 Key Insights</h3>
+                    <ul>
+                        <li><strong>Greedy Choice:</strong> Always selecting minimum edges guarantees optimal MST</li>
+                        <li><strong>Component Reduction:</strong> Each phase significantly reduces component count</li>
+                        <li><strong>Distributed Advantage:</strong> Natural parallelism makes it ideal for large-scale systems</li>
+                        <li><strong>Cycle Prevention:</strong> Union-Find ensures no cycles are created</li>
+                        <li><strong>Historical Significance:</strong> First MST algorithm, predating Prim's and Kruskal's</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h3>⌨️ Keyboard Shortcuts & Controls</h3>
+                    <ul>
+                        <li><strong>F1 or Ctrl+H:</strong> Open/close this help guide</li>
+                        <li><strong>Escape:</strong> Close this modal</li>
+                        <li><strong>Mouse Controls:</strong>
+                            <ul>
+                                <li>Click empty space: Add vertex</li>
+                                <li>Click vertex then another: Add edge</li>
+                                <li>Selection mode: Click to select/deselect vertices</li>
+                            </ul>
+                        </li>
+                        <li><strong>Speed Slider:</strong> Adjust animation speed in real-time</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

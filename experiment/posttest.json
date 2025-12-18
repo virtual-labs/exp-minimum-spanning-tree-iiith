@@ -2,38 +2,157 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "This is a Sample Question 1?",
+      "question": "Which statement accurately describes a Minimum Spanning Tree (MST)?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "It is a subgraph that is a tree and connects all the vertices together.",
+        "b": "It is a path that visits every vertex exactly once.",
+        "c": "It is a collection of the heaviest edges that keep the graph connected.",
+        "d": "It is a tree that includes all possible edges from the graph."
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Correct. This is the definition of a spanning tree, and an MST is the one with the minimum weight.",
+        "b": "This describes a Hamiltonian path, not a spanning tree.",
+        "c": "An MST uses the lightest edges, not the heaviest.",
+        "d": "Including all edges would create cycles, so it would not be a tree."
       },
       "correctAnswer": "a",
       "difficulty": "beginner"
     },
     {
-      "question": "This is a Sample Question 2?",
+      "question": "Under which condition is the Minimum Spanning Tree of a graph guaranteed to be unique?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "If the graph is connected.",
+        "b": "If all edge weights are distinct.",
+        "c": "If the graph has more vertices than edges.",
+        "d": "If the graph is disconnected."
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "A connected graph can still have multiple MSTs if edge weights are not unique.",
+        "b": "Correct. If all edge weights are distinct, there is only one possible MST.",
+        "c": "A graph with V vertices and fewer than V-1 edges cannot be connected.",
+        "d": "A disconnected graph does not have an MST; it has a Minimum Spanning Forest."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which of these algorithms is NOT used for finding MST?",
+      "answers": {
+        "a": "Kruskal's Algorithm",
+        "b": "Prim's Algorithm",
+        "c": "Boruvka's Algorithm",
+        "d": "Dijkstra's Algorithm"
+      },
+      "explanations": {
+        "a": "Kruskal's is a well-known MST algorithm.",
+        "b": "Prim's is a well-known MST algorithm.",
+        "c": "Boruvka's is an MST algorithm.",
+        "d": "Correct. Dijkstra's algorithm is used to find the shortest path from a single source, not the MST."
+      },
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the initial state of the graph components in Boruvka's algorithm?",
+      "answers": {
+        "a": "One single component containing all vertices.",
+        "b": "A forest where each vertex is its own component.",
+        "c": "Two components, split randomly.",
+        "d": "The algorithm starts with a complete MST and removes edges."
+      },
+      "explanations": {
+        "a": "This is the final state of the algorithm, not the initial one.",
+        "b": "Correct. The algorithm initializes with each vertex as its own component or tree.",
+        "c": "The initial components are not random; each vertex is its own.",
+        "d": "This describes a reverse-delete algorithm, not Boruvka's."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "When does Boruvka's algorithm terminate?",
+      "answers": {
+        "a": "When all edges have been considered",
+        "b": "When there is only one component left",
+        "c": "After V-1 iterations",
+        "d": "When a cycle is detected"
+      },
+      "explanations": {
+        "a": "Not all edges may need to be considered.",
+        "b": "Correct. The algorithm stops when all vertices have been merged into a single component, which is the MST.",
+        "c": "The number of iterations is at most log V, not V-1.",
+        "d": "The algorithm is designed to avoid creating cycles, not terminate when one is found."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "The edges added in one iteration of Boruvka's algorithm are selected based on:",
+      "answers": {
+        "a": "The cheapest edge from each vertex",
+        "b": "The cheapest edge from each component",
+        "c": "The globally cheapest edge",
+        "d": "A random edge"
+      },
+      "explanations": {
+        "a": "It's based on components, which may contain multiple vertices.",
+        "b": "Correct. It finds the cheapest edge connecting each component to any other different component.",
+        "c": "This describes Kruskal's algorithm.",
+        "d": "The selection is deterministic and greedy, not random."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "Boruvka's algorithm is particularly well-suited for:",
+      "answers": {
+        "a": "Dense graphs",
+        "b": "Sparse graphs",
+        "c": "Parallel and distributed computation",
+        "d": "Graphs with negative edge weights"
+      },
+      "explanations": {
+        "a": "Other algorithms like Prim's can be more efficient on dense graphs.",
+        "b": "It works on sparse graphs, but this is not its most notable advantage.",
+        "c": "Correct. The ability to find the cheapest edges for all components simultaneously makes it ideal for parallelization.",
+        "d": "MST algorithms generally work fine with negative edge weights, but this is not a specific advantage of Boruvka's."
       },
       "correctAnswer": "c",
-      "difficulty": "beginner"
+      "difficulty": "advanced"
+    },
+    {
+      "question": "If a graph is disconnected, what does Boruvka's algorithm find?",
+      "answers": {
+        "a": "A Minimum Spanning Tree",
+        "b": "A Minimum Spanning Forest",
+        "c": "It fails and returns an error",
+        "d": "A single path connecting two of the components"
+      },
+      "explanations": {
+        "a": "An MST is only defined for a connected graph.",
+        "b": "Correct. The algorithm will find an MST for each connected component of the graph, resulting in a Minimum Spanning Forest.",
+        "c": "The algorithm does not fail; it produces a valid result for the disconnected graph.",
+        "d": "The result is a forest of trees, not a single path."
+      },
+      "correctAnswer": "b",
+      "difficulty": "advanced"
+    },
+    {
+      "question": "The number of iterations in Boruvka's algorithm is at most:",
+      "answers": {
+        "a": "V",
+        "b": "E",
+        "c": "log V",
+        "d": "V/2"
+      },
+      "explanations": {
+        "a": "This would be too slow.",
+        "b": "This would be too slow.",
+        "c": "Correct. Since the number of components is at least halved in each iteration, the number of iterations is bounded by O(log V).",
+        "d": "This could be true for the first iteration, but the number of components continues to decrease."
+      },
+      "correctAnswer": "c",
+      "difficulty": "advanced"
     }
   ]
 }
