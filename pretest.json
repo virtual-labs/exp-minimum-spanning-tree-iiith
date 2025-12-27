@@ -1,0 +1,158 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "What is the primary goal of a Minimum Spanning Tree algorithm?",
+      "answers": {
+        "a": "To find the shortest path between two vertices",
+        "b": "To find a tree that connects all vertices with minimum total edge weight",
+        "c": "To find a cycle that visits all vertices",
+        "d": "To find the vertex with the highest degree"
+      },
+      "explanations": {
+        "a": "This describes algorithms like Dijkstra's or A* for a specific pair of vertices, not an MST.",
+        "b": "Correct. An MST connects all vertices with the lowest possible total edge cost, forming a tree.",
+        "c": "This describes the Traveling Salesperson Problem, not an MST.",
+        "d": "This is a graph metric, but not the goal of an MST algorithm."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which of the following is NOT a property of a Minimum Spanning Tree?",
+      "answers": {
+        "a": "It is a tree",
+        "b": "It connects all vertices",
+        "c": "It has cycles",
+        "d": "It has the minimum possible total edge weight"
+      },
+      "explanations": {
+        "a": "An MST must be a tree.",
+        "b": "An MST must be 'spanning', meaning it connects all vertices.",
+        "c": "Correct. By definition, a tree cannot contain any cycles.",
+        "d": "This is the 'minimum' property of an MST."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In a graph with V vertices, how many edges does a Minimum Spanning Tree have?",
+      "answers": {
+        "a": "V",
+        "b": "V-1",
+        "c": "V+1",
+        "d": "It depends on the graph"
+      },
+      "explanations": {
+        "a": "V edges would create a cycle in a connected graph of V vertices.",
+        "b": "Correct. Any tree with V vertices has exactly V-1 edges.",
+        "c": "V+1 edges would guarantee at least two cycles.",
+        "d": "The number of edges in a spanning tree is fixed for a given number of vertices."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Boruvka's algorithm is a type of:",
+      "answers": {
+        "a": "Greedy algorithm",
+        "b": "Divide and conquer algorithm",
+        "c": "Dynamic programming algorithm",
+        "d": "Brute force algorithm"
+      },
+      "explanations": {
+        "a": "Correct. It is a greedy algorithm because in each stage it adds the cheapest edge from every component, making a locally optimal choice.",
+        "b": "While it has some properties of divide and conquer, its core strategy is greedy.",
+        "c": "It does not use memoization or solve subproblems in the way dynamic programming does.",
+        "d": "It is more efficient than a brute-force approach of checking all possible spanning trees."
+      },
+      "correctAnswer": "a",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What does Boruvka's algorithm do in each iteration?",
+      "answers": {
+        "a": "Adds the cheapest edge in the entire graph",
+        "b": "Adds the cheapest edge from each component to another component",
+        "c": "Removes the most expensive edge from a cycle",
+        "d": "Finds the shortest path from a source vertex"
+      },
+      "explanations": {
+        "a": "This describes Kruskal's algorithm.",
+        "b": "Correct. In each iteration, it finds the cheapest edge going from each component to a different component and adds them all.",
+        "c": "This describes the reverse-delete algorithm.",
+        "d": "This describes an algorithm like Prim's or Dijkstra's."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "How does Boruvka's algorithm handle parallel edges between two components?",
+      "answers": {
+        "a": "It adds all of them",
+        "b": "It adds the one with the minimum weight",
+        "c": "It adds the one with the maximum weight",
+        "d": "It ignores them"
+      },
+      "explanations": {
+        "a": "Adding all parallel edges would create cycles.",
+        "b": "Correct. When finding the cheapest edge for a component, only the edge with the minimum weight is selected.",
+        "c": "This would violate the 'minimum' spanning tree principle.",
+        "d": "The edges must be considered to find the cheapest one."
+      },
+      "correctAnswer": "b",
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "What is the time complexity of Boruvka's algorithm for a graph with V vertices and E edges?",
+      "answers": {
+        "a": "O(E log V)",
+        "b": "O(V^2)",
+        "c": "O(E + V log V)",
+        "d": "O(log V)"
+      },
+      "explanations": {
+        "a": "Correct. The number of components reduces by at least half in each iteration, so there are at most O(log V) iterations. Finding the cheapest edge for all components takes O(E) time.",
+        "b": "This is the complexity for Prim's algorithm using an adjacency matrix.",
+        "c": "This is the complexity for Prim's algorithm using a binary heap.",
+        "d": "This only represents the number of iterations, not the total complexity."
+      },
+      "correctAnswer": "a",
+      "difficulty": "advanced"
+    },
+    {
+      "question": "In each iteration of Boruvka's algorithm, the number of components decreases by at least half.",
+      "answers": {
+        "a": "True",
+        "b": "False",
+        "c": "Both true and false depending on the graph",
+        "d": "Cannot be determined without more information"
+      },
+      "explanations": {
+        "a": "Correct. In the worst case components merge in pairs, halving the number of components; this is a standard analysis used to bound iterations by O(log V).",
+        "b": "Incorrect. The algorithm guarantees at least pair-wise merges in the worst case.",
+        "c": "Incorrect. The guarantee holds regardless of graph specifics as part of the algorithm's merging behavior.",
+        "d": "Incorrect. The algorithm's merging guarantee allows the statement to be determined true."
+      },
+      "correctAnswer": "a",
+      "difficulty": "advanced"
+    },
+    {
+      "question": "Boruvka's algorithm can be parallelized.",
+      "answers": {
+        "a": "True",
+        "b": "False",
+        "c": "Only for dense graphs",
+        "d": "Only for graphs without parallel edges"
+      },
+      "explanations": {
+        "a": "Correct. The search for the cheapest outgoing edge for each component can be done independently, enabling parallel implementations.",
+        "b": "Incorrect. The algorithm's component-wise selection is inherently parallelizable.",
+        "c": "Incorrect. Parallelizability is not limited to dense graphs.",
+        "d": "Incorrect. Parallel edges don't prevent parallelization; they only affect selection logic."
+      },
+      "correctAnswer": "a",
+      "difficulty": "advanced"
+    }
+  ]
+}
