@@ -280,6 +280,33 @@ function updateExecutionMode() {
  * The vertex class demonstrates object-oriented programming concepts
  * and encapsulates both data (position, state) and behavior (rendering, interaction)
  */
+
+/**
+ * Get responsive vertex radius based on canvas size
+ * Scales vertex size for better visibility on smaller screens
+ */
+function getResponsiveRadius() {
+    const baseRadius = 20;
+    const minRadius = 12;
+    const canvasWidth = canvas.width || 900;
+    const scaleFactor = canvasWidth / 900;
+    return Math.max(minRadius, baseRadius * scaleFactor);
+}
+
+/**
+ * Get responsive font sizes based on canvas size
+ */
+function getResponsiveFontSizes() {
+    const canvasWidth = canvas.width || 900;
+    const scaleFactor = Math.max(0.6, canvasWidth / 900);
+    return {
+        main: Math.max(10, Math.floor(14 * scaleFactor)),
+        component: Math.max(8, Math.floor(10 * scaleFactor)),
+        processor: Math.max(6, Math.floor(8 * scaleFactor)),
+        weight: Math.max(9, Math.floor(12 * scaleFactor))
+    };
+}
+
 class Vertex {
     /**
      * Constructor: Initialize a new vertex with position and identifier
@@ -316,9 +343,12 @@ class Vertex {
      * - Gray (#d1d5db): Inactive vertex not in current graph
      */
     draw() {
+        const radius = getResponsiveRadius();
+        const fonts = getResponsiveFontSizes();
+        
         // Begin drawing circular vertex shape
         ctx.beginPath();
-        ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI);
+        ctx.arc(this.x, this.y, radius, 0, 2 * Math.PI);
         
         // Determine vertex appearance based on current state
         if (this.selected) {
@@ -355,7 +385,7 @@ class Vertex {
         // VERTEX LABEL RENDERING
         // Draw vertex identifier (1-based for user friendliness)
         ctx.fillStyle = 'white';           // White text for contrast
-        ctx.font = 'bold 14px Arial';      // Bold, readable font
+        ctx.font = `bold ${fonts.main}px Arial`;      // Bold, readable font
         ctx.textAlign = 'center';          // Center-aligned text
         ctx.textBaseline = 'middle';       // Vertically centered
         ctx.fillText(this.id + 1, this.x, this.y);  // Display 1-based ID
@@ -365,17 +395,17 @@ class Vertex {
         // Component identifier for Borůvka's algorithm
         if (currentAlgorithm === 'Boruvka' && this.inGraph) {
             ctx.fillStyle = '#1f2937';     // Dark gray for contrast
-            ctx.font = 'bold 10px Arial';  // Smaller font for secondary info
+            ctx.font = `bold ${fonts.component}px Arial`;  // Smaller font for secondary info
             // Display component ID below vertex
-            ctx.fillText(`C${this.component}`, this.x, this.y + 30);
+            ctx.fillText(`C${this.component}`, this.x, this.y + radius + 10);
         }
         
         // Processor indicator for distributed simulation
         if (this.isProcessor && currentAlgorithm === 'Boruvka') {
             ctx.fillStyle = '#7c3aed';     // Purple to match processor styling
-            ctx.font = 'bold 8px Arial';   // Small font for indicator
+            ctx.font = `bold ${fonts.processor}px Arial`;   // Small font for indicator
             // Display processor marker above vertex
-            ctx.fillText('P', this.x, this.y - 30);
+            ctx.fillText('P', this.x, this.y - radius - 10);
         }
     }
     
@@ -389,11 +419,12 @@ class Vertex {
      * 
      * COLLISION DETECTION:
      * Uses Euclidean distance formula to determine if click point
-     * is within the vertex's circular boundary (radius = 20 pixels)
+     * is within the vertex's circular boundary
      */
     contains(x, y) {
+        const radius = getResponsiveRadius();
         const distance = Math.sqrt((x - this.x) ** 2 + (y - this.y) ** 2);
-        return distance <= 20;  // Vertex radius for click detection
+        return distance <= radius;  // Vertex radius for click detection
     }
 }
 
@@ -459,6 +490,9 @@ class Edge {
     draw() {
         if (!this.inGraph) return;  // Skip inactive edges
         
+        const fonts = getResponsiveFontSizes();
+        const scaleFactor = Math.max(0.6, (canvas.width || 900) / 900);
+        
         // Draw line between vertex endpoints
         ctx.beginPath();
         ctx.moveTo(this.v1.x, this.v1.y);      // Start at first vertex
@@ -468,22 +502,22 @@ class Edge {
         if (this.inMST) {
             // MST EDGE STATE: Green thick line for solution edges
             ctx.strokeStyle = '#10b981';        // Emerald green
-            ctx.lineWidth = 4;                  // Thick line for emphasis
+            ctx.lineWidth = Math.max(2, 4 * scaleFactor);  // Thick line for emphasis
             ctx.setLineDash([]);               // Solid line
         } else if (this.isMinimumEdge) {
             // CANDIDATE EDGE STATE: Orange dashed line for consideration
             ctx.strokeStyle = '#f59e0b';        // Amber orange
-            ctx.lineWidth = 3;                  // Medium thickness
-            ctx.setLineDash([5, 5]);           // Dashed pattern
+            ctx.lineWidth = Math.max(2, 3 * scaleFactor);  // Medium thickness
+            ctx.setLineDash([5 * scaleFactor, 5 * scaleFactor]);  // Dashed pattern
         } else if (this.highlighted) {
             // HIGHLIGHTED STATE: Red dashed line for current focus
             ctx.strokeStyle = '#ef4444';        // Red
-            ctx.lineWidth = 3;                  // Medium thickness
-            ctx.setLineDash([3, 3]);           // Different dash pattern
+            ctx.lineWidth = Math.max(2, 3 * scaleFactor);  // Medium thickness
+            ctx.setLineDash([3 * scaleFactor, 3 * scaleFactor]);  // Different dash pattern
         } else {
             // NORMAL STATE: Gray solid line for available edges
             ctx.strokeStyle = '#6b7280';        // Gray
-            ctx.lineWidth = 2;                  // Standard thickness
+            ctx.lineWidth = Math.max(1, 2 * scaleFactor);  // Standard thickness
             ctx.setLineDash([]);               // Solid line
         }
         
@@ -496,18 +530,22 @@ class Edge {
         const midX = (this.v1.x + this.v2.x) / 2;
         const midY = (this.v1.y + this.v2.y) / 2;
         
+        // Responsive label box dimensions
+        const boxWidth = Math.max(24, 30 * scaleFactor);
+        const boxHeight = Math.max(16, 20 * scaleFactor);
+        
         // Draw white background rectangle for weight label
         ctx.fillStyle = 'white';
-        ctx.fillRect(midX - 15, midY - 10, 30, 20);
+        ctx.fillRect(midX - boxWidth/2, midY - boxHeight/2, boxWidth, boxHeight);
         
         // Draw border around weight label for clarity
         ctx.strokeStyle = '#374151';
         ctx.lineWidth = 1;
-        ctx.strokeRect(midX - 15, midY - 10, 30, 20);
+        ctx.strokeRect(midX - boxWidth/2, midY - boxHeight/2, boxWidth, boxHeight);
         
         // Render weight text centered in label box
         ctx.fillStyle = '#374151';             // Dark gray text
-        ctx.font = 'bold 12px Arial';          // Bold, readable font
+        ctx.font = `bold ${fonts.weight}px Arial`;  // Bold, readable font
         ctx.textAlign = 'center';              // Horizontally centered
         ctx.textBaseline = 'middle';           // Vertically centered
         ctx.fillText(this.weight, midX, midY); // Display weight value
@@ -1304,7 +1342,8 @@ function generateRandomGraph() {
     
     // VERTEX GENERATION PARAMETERS
     const numVertices = Math.floor(Math.random() * 3) + 6;  // 6-8 vertices for manageability
-    const margin = 80;  // Boundary margin for vertex placement
+    const radius = getResponsiveRadius();
+    const margin = Math.max(50, radius * 3);  // Responsive boundary margin for vertex placement
     
     // PHASE 1: RANDOM VERTEX PLACEMENT
     // Distribute vertices within canvas bounds with proper margins
@@ -4438,18 +4477,12 @@ ALGORITHM ANALYSIS QUESTIONS:
 // ==================================================================
 
 /**
- * Handle mobile device orientation for optimal viewing
+ * Handle device orientation changes
+ * Now supports all orientations - no forced rotation required
  */
 function checkOrientation() {
-    const overlay = document.querySelector('.rotate-device-overlay');
-    const isMobile = window.innerWidth < 768;
-    const isPortrait = window.innerHeight > window.innerWidth;
-    
-    if (isMobile && isPortrait) {
-        overlay.style.display = 'flex';
-    } else {
-        overlay.style.display = 'none';
-    }
+    // We now support all orientations, so just trigger a canvas resize
+    resizeCanvas();
 }
 
 // Event listeners for orientation management
@@ -4484,6 +4517,241 @@ window.showInfo = showInfo;
 window.hideInfo = hideInfo;
 
 // ==================================================================
+// RESPONSIVE CANVAS AND MOBILE NAVIGATION SYSTEM
+// ==================================================================
+
+/**
+ * Resize canvas to fit container while maintaining aspect ratio
+ * Ensures canvas is responsive across all device sizes
+ */
+function resizeCanvas() {
+    const experimentArea = document.querySelector('.experiment-area');
+    if (!experimentArea) return;
+    
+    const containerWidth = experimentArea.clientWidth - 20; // Account for padding
+    const containerHeight = experimentArea.clientHeight - 20;
+    
+    // Define base dimensions and aspect ratio
+    const baseWidth = 900;
+    const baseHeight = 700;
+    const aspectRatio = baseWidth / baseHeight;
+    
+    let newWidth, newHeight;
+    
+    // Calculate dimensions maintaining aspect ratio
+    if (containerWidth / containerHeight > aspectRatio) {
+        // Container is wider than aspect ratio
+        newHeight = Math.min(containerHeight, baseHeight);
+        newWidth = newHeight * aspectRatio;
+    } else {
+        // Container is taller than aspect ratio
+        newWidth = Math.min(containerWidth, baseWidth);
+        newHeight = newWidth / aspectRatio;
+    }
+    
+    // Ensure minimum dimensions for usability
+    newWidth = Math.max(newWidth, 280);
+    newHeight = Math.max(newHeight, 220);
+    
+    // Apply new dimensions
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    
+    // Scale existing vertices to new canvas size if needed
+    if (vertices.length > 0) {
+        const scaleX = newWidth / (canvas._lastWidth || baseWidth);
+        const scaleY = newHeight / (canvas._lastHeight || baseHeight);
+        
+        // Only rescale if significant change
+        if (Math.abs(scaleX - 1) > 0.01 || Math.abs(scaleY - 1) > 0.01) {
+            vertices.forEach(v => {
+                v.x = Math.min(Math.max(v.x * scaleX, 30), newWidth - 30);
+                v.y = Math.min(Math.max(v.y * scaleY, 30), newHeight - 30);
+            });
+        }
+    }
+    
+    // Store current dimensions for next resize
+    canvas._lastWidth = newWidth;
+    canvas._lastHeight = newHeight;
+    
+    // Redraw canvas with new dimensions
+    draw();
+}
+
+/**
+ * Mobile Navigation Toggle Handler
+ * Manages the slide-in control panel for mobile devices
+ */
+function initMobileNavigation() {
+    const mobileNavToggle = document.getElementById('mobileNavToggle');
+    const controlsPanel = document.getElementById('controlsPanel');
+    const panelOverlay = document.getElementById('panelOverlay');
+    
+    if (!mobileNavToggle || !controlsPanel) return;
+    
+    // Toggle controls panel visibility
+    function toggleControlsPanel() {
+        const isActive = controlsPanel.classList.toggle('active');
+        mobileNavToggle.classList.toggle('active', isActive);
+        panelOverlay?.classList.toggle('active', isActive);
+        
+        // Prevent body scrolling when panel is open
+        document.body.style.overflow = isActive ? 'hidden' : '';
+    }
+    
+    // Event listeners for toggle
+    mobileNavToggle.addEventListener('click', toggleControlsPanel);
+    
+    // Close panel when clicking overlay
+    panelOverlay?.addEventListener('click', () => {
+        controlsPanel.classList.remove('active');
+        mobileNavToggle.classList.remove('active');
+        panelOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+    
+    // Close panel when selecting an action (for better mobile UX)
+    controlsPanel.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Only auto-close on mobile
+            if (window.innerWidth < 768) {
+                setTimeout(() => {
+                    controlsPanel.classList.remove('active');
+                    mobileNavToggle.classList.remove('active');
+                    panelOverlay?.classList.remove('active');
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        });
+    });
+}
+
+/**
+ * Touch event handlers for canvas interaction on mobile devices
+ */
+function initTouchHandlers() {
+    let touchStartX, touchStartY;
+    
+    canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+        }
+    }, { passive: false });
+    
+    canvas.addEventListener('touchend', (e) => {
+        if (e.changedTouches.length === 1) {
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            
+            // Calculate if it was a tap (not a drag)
+            const dx = Math.abs(touch.clientX - touchStartX);
+            const dy = Math.abs(touch.clientY - touchStartY);
+            
+            if (dx < 10 && dy < 10) {
+                // Simulate click event
+                const rect = canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                // Handle touch as click
+                handleCanvasInteraction(x, y);
+            }
+        }
+    }, { passive: false });
+}
+
+/**
+ * Unified canvas interaction handler for both mouse and touch
+ */
+function handleCanvasInteraction(x, y) {
+    // Prevent interaction during algorithm animation
+    if (isAnimating) return;
+    
+    // Check if interaction occurred on an existing vertex
+    const clickedVertex = vertices.find(v => v.contains(x, y));
+    
+    // SELECTION MODE HANDLING
+    if (selectMode) {
+        if (clickedVertex) {
+            toggleVertexSelection(clickedVertex);
+        }
+        return;
+    }
+    
+    // GRAPH CONSTRUCTION MODE HANDLING
+    if (!clickedVertex) {
+        // VERTEX CREATION: Click on empty space creates new vertex
+        const newVertex = new Vertex(x, y, vertices.length);
+        vertices.push(newVertex);
+        log(`Added vertex ${newVertex.id + 1}`, 'node');
+    } else {
+        // EDGE CREATION OR VERTEX INTERACTION
+        if (!startVertex) {
+            startVertex = clickedVertex;
+            clickedVertex.highlighted = true;
+        } else if (startVertex === clickedVertex) {
+            startVertex.highlighted = false;
+            startVertex = null;
+        } else {
+            // Check for existing edge
+            const existingEdge = edges.find(e => 
+                (e.v1 === startVertex && e.v2 === clickedVertex) ||
+                (e.v1 === clickedVertex && e.v2 === startVertex)
+            );
+            
+            if (!existingEdge) {
+                const newEdge = new Edge(startVertex, clickedVertex);
+                edges.push(newEdge);
+                log(`Added edge between vertices ${startVertex.id + 1} and ${clickedVertex.id + 1} (weight: ${newEdge.weight})`, 'node');
+            }
+            
+            startVertex.highlighted = false;
+            startVertex = null;
+        }
+    }
+    
+    // Update display
+    updateGraphInfo();
+    prepareAlgorithmSteps();
+    draw();
+}
+
+/**
+ * Initialize responsive behavior
+ */
+function initResponsive() {
+    // Initial canvas resize
+    resizeCanvas();
+    
+    // Initialize mobile navigation
+    initMobileNavigation();
+    
+    // Initialize touch handlers
+    initTouchHandlers();
+    
+    // Handle window resize with debouncing
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            resizeCanvas();
+        }, 100);
+    });
+    
+    // Handle orientation change
+    window.addEventListener('orientationchange', () => {
+        setTimeout(resizeCanvas, 200);
+    });
+}
+
+// Initialize responsive features on load
+window.addEventListener('load', initResponsive);
+
+// ==================================================================
 // KEYBOARD SHORTCUTS AND ACCESSIBILITY
 // ==================================================================
 
@@ -4496,9 +4764,17 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         showInfo();
     }
-    // Escape to close modal
+    // Escape to close modal or mobile panel
     else if (e.key === 'Escape') {
         hideInfo();
+        // Also close mobile panel
+        const controlsPanel = document.getElementById('controlsPanel');
+        const mobileNavToggle = document.getElementById('mobileNavToggle');
+        const panelOverlay = document.getElementById('panelOverlay');
+        controlsPanel?.classList.remove('active');
+        mobileNavToggle?.classList.remove('active');
+        panelOverlay?.classList.remove('active');
+        document.body.style.overflow = '';
     }
     // Space bar to advance in manual mode
     else if (e.key === ' ' && executionMode === 'manual' && manualMode) {

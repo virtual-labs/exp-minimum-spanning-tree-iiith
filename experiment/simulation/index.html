@@ -2,23 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Interactive visualization of Borůvka's Minimum Spanning Tree Algorithm for distributed systems">
+    <meta name="theme-color" content="#4299e1">
     <title>Borůvka's MST Algorithm Visualizer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-container">
         <header class="header">
-            <h1>
-                🌳 Borůvka's MST Algorithm Visualizer
-                <div class="status-indicator"></div>
-            </h1>
-            <div style="font-size: 0.9em; opacity: 0.9;">
-                Distributed Minimum Spanning Tree Algorithm
+            <div>
+                <h1>
+                    🌳 Borůvka's MST
+                    <div class="status-indicator"></div>
+                </h1>
+                <div class="subtitle">
+                    Distributed Minimum Spanning Tree Algorithm
+                </div>
             </div>
+            <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle controls menu">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span>Controls</span>
+            </button>
         </header>
 
-        <div class="controls-panel">
+        <!-- Overlay for mobile panel -->
+        <div class="panel-overlay" id="panelOverlay"></div>
+
+        <div class="controls-panel" id="controlsPanel">
             <div class="control-section">
                 <h3>Graph Configuration</h3>
                 <div class="control-group">
@@ -107,21 +122,21 @@
 
             <div class="status-section">
                 <h4>MPI Code Download</h4>
-                <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 2px solid #0ea5e9; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px;">
-                    <div style="font-size: 0.9rem; color: #475569; margin-bottom: 15px; line-height: 1.5;">
+                <div class="mpi-download-section">
+                    <div class="mpi-description">
                         Download production-ready MPI implementation of Borůvka's algorithm for distributed systems.
                     </div>
                     
-                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <button onclick="downloadMPIBoruvka()" style="flex: 1; background: linear-gradient(135deg, #3b82f6, #1e40af); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="mpi-buttons">
+                        <button onclick="downloadMPIBoruvka()" class="mpi-btn">
                             📁 Borůvka's MPI
                         </button>
-                        <button onclick="downloadSequentialBoruvka()" style="flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                        <button onclick="downloadSequentialBoruvka()" class="mpi-btn secondary">
                             📁 Sequential Version
                         </button>
                     </div>
                     
-                    <div style="font-size: 0.8rem; color: #64748b; text-align: left; background: white; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div class="mpi-instructions">
                         <strong>Usage Instructions:</strong><br>
                         1. Compile: <code>mpicc -o boruvka filename.c</code><br>
                         2. Run: <code>mpirun -np [processes] ./boruvka</code><br>
